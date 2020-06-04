@@ -1,5 +1,7 @@
 package com.leyou.pojo;
 
+import java.util.Map;
+
 public class SearchRequest {
     private String key;// 搜索条件
 
@@ -10,6 +12,8 @@ public class SearchRequest {
     private Boolean descending;
 
     private boolean descing;
+
+    private Map<String,Object> filter;
 
     private static final Integer DEFAULT_SIZE = 20;// 每页大小，不从页面接收，而是固定大小
     private static final Integer DEFAULT_PAGE = 1;// 默认页
@@ -22,14 +26,13 @@ public class SearchRequest {
         this.sortBy = sortBy;
     }
 
+    public Map<String, Object> getFilter() {
+        return filter;
+    }
 
-
-
-
-
-
-
-
+    public void setFilter(Map<String, Object> filter) {
+        this.filter = filter;
+    }
 
     public boolean isDescing() {
         return descing;
@@ -46,17 +49,6 @@ public class SearchRequest {
     public void setDescending(Boolean descending) {
         this.descending = descending;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     public String getKey() {

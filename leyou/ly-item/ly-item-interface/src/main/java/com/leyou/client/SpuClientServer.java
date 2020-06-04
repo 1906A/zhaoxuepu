@@ -1,6 +1,7 @@
 package com.leyou.client;
 
 import com.leyou.common.PageResult;
+import com.leyou.pojo.Spu;
 import com.leyou.pojo.SpuDetail;
 import com.leyou.vo.SpuVo;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,4 +19,13 @@ public interface SpuClientServer {
 
     @RequestMapping("detail/{spuId}")
     public SpuDetail findSpuDetailBySpuId(@PathVariable("spuId") Long spuId);
+
+    /**
+     * 根据spuId查询spu
+     *
+     * @param spuId
+     * @return
+     */
+    @RequestMapping("findSpuBuId")
+    public Spu findSpuBuId(@RequestParam("spuId") Long spuId);
 }

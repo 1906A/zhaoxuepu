@@ -7,6 +7,7 @@ import com.leyou.common.PageResult;
 import com.leyou.item.Goods;
 import com.leyou.pojo.*;
 import com.leyou.repository.GoodsRepository;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -52,7 +53,27 @@ public class SearchController {
         NativeSearchQueryBuilder builder = new NativeSearchQueryBuilder();
 
         //构造条件  从es  all 中搜索
-        builder.withQuery(QueryBuilders.matchQuery("all",searchRequest.getKey()).operator(Operator.AND));
+        //builder.withQuery(QueryBuilders.matchQuery("all",searchRequest.getKey()).operator(Operator.AND));
+
+        //过滤filter查询条件
+        //匹配规格参数时改造
+        BoolQueryBuilder builder1 = QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("all",searchRequest.getKey()).operator(Operator.AND));
+        if(searchRequest.getFilter()!=null && searchRequest.getFilter().size()>0){
+            searchRequest.getFilter().keySet().forEach(key->{
+
+
+                String field ="specs."+key+".keyword";
+
+
+                if(key.equals("分类")){
+                    field ="cid3";
+                }else if(key.equals("品牌")){
+                    field="brandId";
+                }
+                builder1.filter(QueryBuilders.termQuery(field,searchRequest.getFilter().get(key)));
+            });
+        }
+        builder.withQuery(builder1);
 
         //分页查询
         builder.withPageable(PageRequest.of(searchRequest.getPage() - 1, searchRequest.getSize()));
@@ -95,7 +116,6 @@ public class SearchController {
 
 
         //构造规格参数组数据
-
         List<Map<String,Object>> paramList = new ArrayList<>();
         //非空判断 -判断分类id不为空
         if(categoryList.size()==1){
@@ -139,16 +159,6 @@ public class SearchController {
                 }
             });
         }
-
-
-
-
-
-
-
-
-        //执行查询  totalelement 总条数   totalpage  总页数  content  数据内容
-        //Page<Goods> search = goodsRepository.search(builder.build());
 
         return new SearchResult(search.getTotalElements(), search.getContent(),
                 search.getTotalPages(),categoryList,brandList,paramList);
