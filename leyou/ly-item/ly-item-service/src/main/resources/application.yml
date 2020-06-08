@@ -24,6 +24,8 @@ eureka:
 mybatis:
   type-aliases-package: com.leyou.dao
   mapper-locations: classpath:mappers/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
 
 logging:
   level:

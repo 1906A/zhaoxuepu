@@ -62,4 +62,16 @@ public class SpecParamController {
         return specParamService.fingSpecParamByCidAndSearching(cid);
     }
 
+    /**
+     * 根据三级分类id+是否通用参数值查询
+     *
+     * @param cid
+     * @return
+     */
+    @RequestMapping("paramByCidAndGeneric")
+    public List<SpecParam> fingParamByCidAndGeneric(@RequestParam("cid") Long cid,
+                                                    @RequestParam("generic") boolean generic){
+        return specParamService.fingParamByCidAndGeneric(cid,generic);
+    }
+
 }

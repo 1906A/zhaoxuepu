@@ -1,6 +1,7 @@
 package com.leyou.controller;
 
 import com.leyou.pojo.Category;
+import com.leyou.pojo.SpecParam;
 import com.leyou.service.CategoryService;
 import org.omg.CORBA.OBJ_ADAPTER;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,18 @@ public class CategoryController {
     @RequestMapping("findCategoryById")
     public Category findCategoryById(@RequestParam("id") Long id){
         return categoryService.findCategoryById(id);
+    }
+
+
+    /**
+     * 根据分类id查询分类名称
+     *
+     * @param ids
+     * @return
+     */
+    @RequestMapping("findCategoryByCids")
+    public List<Category> findCategoryByCids(@RequestBody List<Long> ids){
+        return categoryService.findCategoryByCids(ids);
     }
 
 }

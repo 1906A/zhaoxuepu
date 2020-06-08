@@ -5,6 +5,8 @@ spring:
     name: gooddetail-service
   main:
     allow-bean-definition-overriding: true
+  thymeleaf:
+    cache: false
 
 eureka:
   client:

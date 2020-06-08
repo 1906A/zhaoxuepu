@@ -64,4 +64,17 @@ public class SpecParamService {
         specParam.setSearching(true);
         return specParamMapper.select(specParam);
     }
+
+    /**
+     * 根据三级分类id+是否通用参数值查询
+     *
+     * @param cid
+     * @return
+     */
+    public List<SpecParam> fingParamByCidAndGeneric(Long cid, boolean generic) {
+        SpecParam specParam =new SpecParam();
+        specParam.setCid(cid);
+        specParam.setGeneric(generic);
+        return specParamMapper.select(specParam);
+    }
 }

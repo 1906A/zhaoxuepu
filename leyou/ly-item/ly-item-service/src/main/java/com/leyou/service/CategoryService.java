@@ -2,9 +2,11 @@ package com.leyou.service;
 
 import com.leyou.dao.CategoryMapper;
 import com.leyou.pojo.Category;
+import com.leyou.pojo.SpecParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -68,5 +70,21 @@ public class CategoryService {
      */
     public Category findCategoryById(Long id) {
         return categoryMapper.selectByPrimaryKey(id);
+    }
+
+
+    /**
+     *
+     * 根据分类id查询分类名称
+     *
+     * @param ids
+     * @return
+     */
+    public List<Category> findCategoryByCids(List<Long> ids) {
+        List<Category> categoryList =new ArrayList<>();
+        ids.forEach(cid ->{
+            categoryList.add(categoryMapper.selectByPrimaryKey(cid));
+        });
+        return categoryList;
     }
 }
