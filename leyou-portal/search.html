@@ -118,7 +118,7 @@
         </div>
         <!--selector-->
         <div class="clearfix selector">
-            <div class="type-wrap" v-for="(f,index) in filters" v-if="f.key!='品牌'" >
+            <div class="type-wrap" v-for="(f,index) in filters" v-if="f.key!='品牌'" v-show="index<5 || show">
                 <div class="fl key">{{f.key}}</div>
                 <div class="fl value">
                     <ul class="type-list">
@@ -131,7 +131,7 @@
 
 
 
-            <div class="type-wrap logo" v-else >
+            <div class="type-wrap logo" v-else v-show="index<5 || show">
                 <div class="fl key brand">{{f.key}}</div>
                 <div class="value logos">
                     <ul class="logo-list" >
@@ -150,10 +150,10 @@
 
 
             <div class="type-wrap" style="text-align: center">
-                <v-btn small flat>
+                <v-btn small flat @click="show=true">
                     更多<v-icon>arrow_drop_down</v-icon>
                 </v-btn>
-                <v-btn small="" flat>
+                <v-btn small="" flat @click="show=false">
                     收起<v-icon>arrow_drop_up</v-icon>
                 </v-btn>
             </div>
@@ -418,6 +418,8 @@
                         this.totalPage = data.totalPage;
 
 
+                        this.filters =[];
+
                         this.filters.push({
                             key : "分类",
                             options : data.categoryList
@@ -428,12 +430,8 @@
                         });
 
                         data.paramList.forEach(p=>{
-                            vm.filters.push(p);
+                            this.filters.push(p);
                         });
-
-
-
-
                     })
                     .catch(error =>{
 
