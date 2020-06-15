@@ -104,7 +104,7 @@
                 <li ><span>手机通讯</span></li>
             </ul>
             <!--已选择过滤项-->
-            <ul class="tags-choose">
+            <!--<ul class="tags-choose">
                 <li class="tag">
                     品牌:<span style="color: red">apple</span>
                     <i class="sui-icon icon-tb-close"></i>
@@ -112,6 +112,12 @@
                 <li class="tag">
                     内存:<span style="color: red">4G</span>
                     <i class="sui-icon icon-tb-close"></i>
+                </li>
+            </ul>-->
+            <ul class="tags-choose">
+                <li class="tag" v-for="(v,k) in search.filter" v-if="k !== 'cid3'">
+                    {{k === 'brandId' ? '品牌' : k}}:<span style="color: red">{{getFilterValue(k,v)}}</span></span>
+                    <i class="sui-icon icon-tb-close" @click="close(k)"></i>
                 </li>
             </ul>
             <div class="clearfix"></div>
@@ -353,6 +359,22 @@
             show:false
         },
         methods:{
+            close(k){
+                this.search.filter[k] =null;
+            },
+            getFilterValue(k,v){
+                // 如果没有过滤参数，我们跳过展示
+                if(!this.filters || this.filters.length === 0){
+                    return null;
+                }
+                let filter = null;
+                // 判断是否是品牌
+                if(k === 'brandId'){
+                    // 返回品牌名称
+                    return this.filters.find(f => f.k === 'brandId').options[0].name;
+                }
+                return v;
+            },
             paramSpec(item,opt){
 
                 let searchTemp ={};
