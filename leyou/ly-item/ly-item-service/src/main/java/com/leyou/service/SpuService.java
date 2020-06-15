@@ -13,6 +13,7 @@ import com.leyou.pojo.SpuDetail;
 import com.leyou.pojo.Stock;
 import com.leyou.vo.SpuVo;
 import com.netflix.discovery.converters.Auto;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,9 @@ public class SpuService {
     private SkuMapper skuMapper;
     @Autowired
     private StockMapper stockMapper;
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
     /**
      * 查询商品列表 分页
@@ -98,7 +102,14 @@ public class SpuService {
 
         });
 
+        //发送mq消息
+        this.sendMsg("insert",spu.getId());
 
+    }
+
+    public void sendMsg(String type,Long spuId){
+        //发送mq消息
+        amqpTemplate.convertAndSend("item.exchanges","item."+type,spuId);
     }
 
     /**
@@ -140,13 +151,19 @@ public class SpuService {
 
 
         //第三：修改sku
-        List<Sku> skus = spuVo.getSkus();
-        skus.forEach(s ->{
-              //删除sku
-              s.setEnable(false);
-              skuMapper.updateByPrimaryKey(s);
-              //库存
-              stockMapper.deleteByPrimaryKey(s.getId());
+//        List<Sku> skus = spuVo.getSkus();
+//        skus.forEach(s ->{
+//              //删除sku
+//              s.setEnable(false);
+//              skuMapper.updateByPrimaryKey(s);
+//              //库存
+//              stockMapper.deleteByPrimaryKey(s.getId());
+//        });
+
+        List<Sku> skuList = skuMapper.findSkusBySpuId(spuVo.getId());
+        skuList.forEach(s ->{
+            skuMapper.deleteByPrimaryKey(s.getId());
+            stockMapper.deleteByPrimaryKey(s.getId());
         });
 
         //sku
@@ -165,6 +182,11 @@ public class SpuService {
             stockMapper.insert(stock);
 
         });
+
+
+
+        //发送mq消息
+        this.sendMsg("update",spuVo.getId());
     }
 
     /**
@@ -198,6 +220,9 @@ public class SpuService {
         //删除spu
         spuMapper.deleteByPrimaryKey(spuId);
 
+        //删除商品消息发送mq
+        this.sendMsg("delete",spuId);
+
     }
 
     /**
@@ -219,5 +244,9 @@ public class SpuService {
      */
     public Spu findSpuBuId(Long spuId) {
         return spuMapper.selectByPrimaryKey(spuId);
+    }
+
+    public SpuVo findSpuBySpuId(Long spuId) {
+        return spuMapper.findSpuBySpuId(spuId);
     }
 }

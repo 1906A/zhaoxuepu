@@ -8,6 +8,8 @@ spring:
     name: search-service
   main:
     allow-bean-definition-overriding: true
+  rabbitmq:
+    host: 192.168.58.132
 
 eureka:
   client:

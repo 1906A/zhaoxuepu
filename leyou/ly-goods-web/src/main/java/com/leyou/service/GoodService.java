@@ -1,14 +1,9 @@
-package com.leyou.controller;
-
+package com.leyou.service;
 
 import com.leyou.client.*;
 import com.leyou.pojo.*;
-import com.leyou.service.GoodService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -20,38 +15,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
-public class GoodsDetailController {
-
+@Service
+public class GoodService {
 
     @Autowired
-    GoodService goodService;
+    SpuClient spuClient;
 
-    @RequestMapping("hello")
-    public String hello(Model model){
-        String name ="张三";
+    @Autowired
+    SkuClient skuClient;
 
-        model.addAttribute("name",name);
-        return "hello";
-    }
+    @Autowired
+    SpecGroupClient specGroupClient;
+
+    @Autowired
+    CategoryClient categoryClient;
+
+    @Autowired
+    SpecParamClient specParamClient;
+
+    @Autowired
+    BrandClient brandClient;
+
+    @Autowired
+    TemplateEngine templateEngine;
 
     /**
-     * 请求商品详情的微服务
-     * 1：spu
-     * 2：spudetail
-     * 3：sku
-     * 4：规格参数组
-     * 5：规格参数详情
-     * 6：三级分类
+     * 查询商品详情数据
      *
      * @param spuId
-     * @param model
      * @return
      */
-    @RequestMapping("item/{spuId}.html")
-    public String item(@PathVariable("spuId") Long spuId,Model model){
-
-        /*//1:spu
+    public Map<String,Object> item(Long spuId){
+        //1:spu
         Spu spu = spuClient.findSpuBuId(spuId);
 
         //2：spudetail
@@ -79,37 +74,27 @@ public class GoodsDetailController {
             paramMap.put(param.getId(),param.getName());
         });
 
-        model.addAttribute("spu",spu);
-        model.addAttribute("spuDetail",spuDetail);
-        model.addAttribute("categoryList",categoryList);
-        model.addAttribute("brand",brand);
-        model.addAttribute("skuList",skuList);
-        model.addAttribute("groups",groups);
-        model.addAttribute("paramMap",paramMap);*/
+        Map<String,Object> map = new HashMap<>();
 
+        map.put("spu",spu);
+        map.put("spuDetail",spuDetail);
+        map.put("categoryList",categoryList);
+        map.put("brand",brand);
+        map.put("skuList",skuList);
+        map.put("groups",groups);
+        map.put("paramMap",paramMap);
 
-        //1：查询数据
-        Map<String, Object> map = goodService.item(spuId);
-        model.addAllAttributes(map);
-
-        //2：写入静态文件
-        goodService.creatHtml(spuId);
-
-        return "item";
+        return map;
     }
 
+
     /**
-     * 通过thyemleaf实现页面的静态化
      *
-     * @param spu
-     * @param spuDetail
-     * @param categoryList
-     * @param brand
-     * @param skuList
-     * @param groups
-     * @param paramMap
+     * 创建静态页面
+     *
+     * @param spuId
      */
-    /*private void creatHtml(Spu spu, SpuDetail spuDetail, List<Category> categoryList, Brand brand, List<Sku> skuList, List<SpecGroup> groups, Map<Long, String> paramMap) {
+    public void creatHtml(Long spuId) {
 
         PrintWriter writer = null;
         try {
@@ -117,16 +102,18 @@ public class GoodsDetailController {
             Context context =new Context();
 
             //2:把数据放入到上下文中
-            context.setVariable("spu",spu);
+            /*context.setVariable("spu",spu);
             context.setVariable("spuDetail",spuDetail);
             context.setVariable("categoryList",categoryList);
             context.setVariable("brand",brand);
             context.setVariable("skuList",skuList);
             context.setVariable("groups",groups);
-            context.setVariable("paramMap",paramMap);
+            context.setVariable("paramMap",paramMap);*/
+
+            context.setVariables(this.item(spuId));
 
             //3:写入文件，写入流
-            File file =new File("D:\\system\\nginx-1.16.1\\html\\"+spu.getId()+".html");
+            File file =new File("D:\\system\\nginx-1.16.1\\html\\"+spuId+".html");
             writer = new PrintWriter(file);
 
             //4：执行静态化
@@ -140,5 +127,17 @@ public class GoodsDetailController {
                 writer.close();
             }
         }
-    }*/
+    }
+
+    /**
+     * 删除静态页面
+     *
+     * @param spuId
+     */
+    public void deleteHtml(Long spuId) {
+        File file =new File("D:\\system\\nginx-1.16.1\\html\\"+spuId+".html");
+        if(file !=null && file.exists()){
+            file.delete();
+        }
+    }
 }

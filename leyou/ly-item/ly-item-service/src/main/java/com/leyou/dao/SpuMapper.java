@@ -12,4 +12,6 @@ public interface SpuMapper extends Mapper<Spu> {
 
     List<SpuVo> findSpuPage(@Param("key") String key,
                             @Param("saleable")Integer saleable);
+
+    SpuVo findSpuBySpuId(@Param("spuId") Long spuId);
 }
