@@ -95,7 +95,19 @@ public class UserController {
     @GetMapping("/query")
     public User query(@RequestParam("username")String username,@RequestParam("password") String password){
         System.out.println("查询用户：username="+username+"password="+password);
-        return new User();
+
+        //1：根据用户名查询用户信息
+        User user  = userService.findUser(username);
+        if(user!=null){
+            //2：比对密码
+            String newPassword = DigestUtils.md5Hex(password + user.getSalt());
+            System.out.println("newPassword:"+newPassword);
+            System.out.println("password:"+user.getPassword());
+            if(user.getPassword().equals(newPassword)){
+                return user;
+            }
+        }
+        return null;
     }
 
 
@@ -106,18 +118,20 @@ public class UserController {
      * @param password
      * @return
      */
-    @PostMapping("login")
-    public Boolean login(@RequestParam("username")String username,@RequestParam("password") String password){
-        Boolean result = false;
-        //1：根据用户名查询用户信息
-        User user  = userService.findUser(username);
-        if(user!=null){
-            //2：比对密码
-            String newPassword = DigestUtils.md5Hex(password + user.getSalt());
-            if(newPassword.equals(user.getPassword())){
-                result = true;
-            }
-        }
-        return result;
-    }
+//    @PostMapping("login")
+//    public String login(@RequestParam("username")String username,@RequestParam("password") String password){
+//        String result = "1";
+//        //1：根据用户名查询用户信息
+//        User user  = userService.findUser(username);
+//        if(user!=null){
+//            //2：比对密码
+//            String newPassword = DigestUtils.md5Hex(password + user.getSalt());
+//            System.out.println("newPassword:"+newPassword);
+//            System.out.println("password:"+user.getPassword());
+//            if(user.getPassword().equals(newPassword)){
+//                result = "0";
+//            }
+//        }
+//        return result;
+//    }
 }
