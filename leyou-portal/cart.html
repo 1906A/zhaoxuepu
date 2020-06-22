@@ -92,7 +92,7 @@
                         <span><em>已节省：</em><i>-¥20.00</i></span>
                     </div>
                     <div class="sumbtn">
-                        <a class="sum-btn"  href="getOrderInfo.html"  target="_blank">结算</a>
+                        <a class="sum-btn" @click="toPay" >结算</a>
                     </div>
                 </div>
             </div>
@@ -289,6 +289,22 @@
                 })
         },
         methods:{
+            toPay(){
+                //判断用户是否登录
+                this.ly.http("/auth/verify")
+                    .then(resp => {
+                        this.user = resp.data;  //对象为空代表购物车为空   对象有值已登录
+                        if(this.user.id ==null){
+                           //未登录
+                           location.href="http://www.leyou.com/login.html?returnUrl="+location.href;
+                        }else{
+                            //已登录  把选择的商品放入到本地local storage
+                            ly.store.set("js_selected",this.selected)
+                            window.open("http://www.leyou.com/getOrderInfo.html",target="_blank")
+                        }
+
+                    })
+            },
             deleteCart(cart,i){
                 this.ly.http("/auth/verify")
                     .then(resp => {
