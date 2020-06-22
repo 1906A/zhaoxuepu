@@ -5,6 +5,9 @@ import com.leyou.common.UserInfo;
 import com.leyou.config.JwtProperties;
 import com.leyou.pojo.SkuVo;
 import com.leyou.utils.JsonUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -17,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @EnableConfigurationProperties(JwtProperties.class)
+@Api("购物车服务接口")
 public class CartController {
 
     /**
@@ -43,7 +47,9 @@ public class CartController {
      * @param token
      * @param skuVo
      */
-    @RequestMapping("add")
+    @PostMapping("add")
+    @ApiOperation(value = "购物车添加保存到redis", notes = "购物车添加")
+    @ApiImplicitParam(name = "skuVo", required = true, value = "结算页选择的sku串")
     public void add(@CookieValue("token")String token, @RequestBody SkuVo skuVo){
 
         UserInfo userInfo = this.getUserInfoByToken(token);
@@ -82,7 +88,7 @@ public class CartController {
      * @param token
      * @return
      */
-    @RequestMapping("selectedSku")
+    @PostMapping("selectedSku")
     public SkuVo selectedSku(@CookieValue("token")String token){
         UserInfo userInfo = this.getUserInfoByToken(token);
         //从redis获取最新的sku信息   json
@@ -98,7 +104,7 @@ public class CartController {
      * @param token
      * @param skuVo
      */
-    @RequestMapping("update")
+    @PostMapping("update")
     public void update(@CookieValue("token")String token,@RequestBody  SkuVo skuVo){
 
         UserInfo userInfo = this.getUserInfoByToken(token);
@@ -131,7 +137,7 @@ public class CartController {
      * @param token
      * @param id
      */
-    @RequestMapping("delete")
+    @PostMapping("delete")
     public void delete(@CookieValue("token")String token,@RequestParam("id") Long id){
         UserInfo userInfo = this.getUserInfoByToken(token);
 
@@ -149,7 +155,7 @@ public class CartController {
      * @param token
      * @return
      */
-    @RequestMapping("query")
+    @PostMapping("query")
     public List<SkuVo> query(@CookieValue("token")String token){
 
         UserInfo userInfo = this.getUserInfoByToken(token);
