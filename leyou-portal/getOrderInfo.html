@@ -116,8 +116,8 @@
 					</div>
 					<div class="step-cont">
 						<ul class="payType">
-							<li class="" >微信付款<span title="点击取消选择"></span></li>
-							<li class="selected">货到付款<span title="点击取消选择"></span></li>
+							<li :class="{selected:paymentType==1 }" @click="paymentType=1" >微信付款<span title="点击取消选择"></span></li>
+							<li :class="{selected:paymentType==2 }" @click="paymentType=2">货到付款<span title="点击取消选择"></span></li>
 						</ul>
 					</div>
 					<div class="hr"></div>
@@ -193,7 +193,7 @@
 			</div>
 		</div>
 		<div class="submit">
-			<a class="sui-btn btn-danger btn-xlarge" href="pay.html">提交订单</a>
+			<a class="sui-btn btn-danger btn-xlarge"  @click="creatOrder">提交订单</a>
 		</div>
 	</div>
 
@@ -231,7 +231,7 @@
 				selectedAddress: 0,
                 selectedSku:[],
 				totalPrice :0,
-				fanxian : 10475.80,
+				fanxian : 8000.80,
 				yunfei : 0,
 				paymentType :1
             },
@@ -246,6 +246,63 @@
 
             	  console.info(this.selectedSku);
 			},
+            methods:{
+                creatOrder(){
+                    alert(111)
+                    let orderDetail =[];
+
+                    for (let i = 0; i <this.selectedSku.length ; i++) {
+
+                        let obj = {
+                            "skuId": this.selectedSku[i].id,
+                            "num": this.selectedSku[i].num,
+                            "title": this.selectedSku[i].title,
+                            "price": this.selectedSku[i].price,
+                            "ownSpec": this.selectedSku[i].ownSpec,
+                            "image": this.selectedSku[i].images
+                        }
+
+                        orderDetail.push(obj);
+                    }
+
+                    console.info(orderDetail)
+
+
+
+                    let order={
+                        "totalPay": this.totalPrice*100,
+                        "postFee": 0,
+                        "paymentType": this.paymentType,
+                        "actualPay": (this.totalPrice-this.fanxian+this.yunfei).toFixed(2)*100,
+                        "buyerMessage": null,
+                        "buyerNick": "huge",
+                        "orderDetails": orderDetail,
+                        "receiver": "锋哥",
+                        "receiverMobile": "15800000000",
+                        "receiverState": "上海",
+                        "receiverCity": "上海",
+                        "receiverDistrict": "浦东新签",
+                        "receiverAddress": "航头镇航头路18号传智播客3号楼",
+                        "receiverZip": "210000",
+                        "invoiceType": 0,
+                        "sourceType":2
+                    }
+
+                    this.ly.http.post("/order/order",order,{
+                        transformResponse: [
+                            function(data){
+                                return data;
+                            }
+                        ]
+                      })
+                        .then(resp => {
+                            //alert("创建订单成功：orderId="+resp.data)
+                            location.href="http://www.leyou.com/pay.html?orderId="+resp.data;
+                        }).catch(resp =>{
+                            alert("创建订单失败")
+                    })
+                }
+            },
 			components:{
                 shortcut: () => import("/js/pages/shortcut.js")
 			}
